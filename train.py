@@ -174,7 +174,7 @@ def train(hyp, opt, device, tb_writer=None):
     # Process 0
     if rank in [-1, 0]:
         ema.updates = start_epoch * nb // accumulate  # set EMA updates
-        testloader = create_dataloader(test_path, imgsz_test, total_batch_size, gs, opt,
+        testloader = create_dataloader(test_path, imgsz_test, total_batch_size*2, gs, opt,
                                        hyp=hyp, augment=False, cache=opt.cache_images and not opt.notest, rect=True,
                                        rank=-1, world_size=opt.world_size, workers=opt.workers)[0]  # testloader
 
@@ -241,6 +241,7 @@ def train(hyp, opt, device, tb_writer=None):
         if rank in [-1, 0]:
             pbar = tqdm(pbar, total=nb)  # progress bar
         optimizer.zero_grad()
+        
         for i, (imgs, targets, paths, _) in pbar:  # batch -------------------------------------------------------------
             ni = i + nb * epoch  # number integrated batches (since train start)
             imgs = imgs.to(device, non_blocking=True).float() / 255.0  # uint8 to float32, 0-255 to 0.0-1.0
@@ -258,7 +259,7 @@ def train(hyp, opt, device, tb_writer=None):
 
             # Multi-scale
             if opt.multi_scale:
-                sz = random.randrange(int(imgsz * 0.3), int(imgsz * 1.3) + gs) // gs * gs  # size
+                sz = random.randrange(int(imgsz * 0.7), int(imgsz * 1.3) + gs) // gs * gs  # size
                 sf = sz / max(imgs.shape[2:])  # scale factor
                 if sf != 1:
                     ns = [math.ceil(x * sf / gs) * gs for x in imgs.shape[2:]]  # new shape (stretched to gs-multiple)
@@ -312,7 +313,7 @@ def train(hyp, opt, device, tb_writer=None):
             final_epoch = epoch + 1 == epochs
             if not opt.notest or final_epoch:  # Calculate mAP
                 results, maps, times = test.test(opt.data,
-                                                 batch_size=total_batch_size,
+                                                 batch_size=total_batch_size*2,
                                                  imgsz=imgsz_test,
                                                  model=ema.ema,
                                                  single_cls=opt.single_cls,
@@ -351,10 +352,13 @@ def train(hyp, opt, device, tb_writer=None):
                             'optimizer': None if final_epoch else optimizer.state_dict()}
 
                 # Save last, best and delete
-                torch.save(ckpt, last)
+                torch.save(ckpt, wdir / 'last{}.pt'.format(epoch))
                 if best_fitness == fi:
                     torch.save(ckpt, best)
                 del ckpt
+
+        from utils.general import plot_results
+        plot_results(save_dir = log_dir)
         # end epoch ----------------------------------------------------------------------------------------------------
     # end training
 
