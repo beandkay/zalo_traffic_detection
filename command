@@ -1,14 +1,1 @@
-phase1(exp6): python train.py --img 512 --batch 32 --epochs 100 --data zalo_traffic.yaml --weights '' --cfg yolov5x_zalo_traffic.yaml
-phase2(exp15): python train.py --img 512 --batch 32 --epochs 100 --data zalo_traffic.yaml --weights '' --cfg yolov5x_zalo_traffic.yaml\
---hyp data/hyp.phase2.yaml --multi-scale
-
-phase3(exp25): python train.py --img 384 --batch 32 --epochs 100 --data zalo_traffic.yaml --weights '' --cfg yolov5x_zalo_traffic.yaml\
---hyp data/hyp.phase2.yaml --multi-scale --worker 16
-
-phase4(exp25): python train.py --img 384 --batch 32 --epochs 100 --data zalo_traffic.yaml --weights '' --cfg yolov5x_zalo_traffic.yaml --hyp data/hyp.phase2.yaml --multi-scale --worker 16 --resume --weights runs/exp25/weights/last.pt> logs/log_phase4.log &
-
-phase5(exp40): python train.py --img 320 --batch 48 --epochs 50 --data zalo_traffic.yaml --weights '' --cfg yolov5x_zalo_traffic.yaml --hyp data/hyp.phase5.yaml --multi-scale --worker 16
-
-
-phase6(exp47): python train.py --img 160 --batch 128 --epochs 50 --data zalo_traffic_160.yaml --weights '' --cfg yolov5x_zalo_traffic.yaml --hyp data/hyp.phase6.yaml --multi-scale --worker 20
-phase7(exp47): python train.py --img 160 --batch 176 --epochs 50 --data zalo_traffic_160.yaml --weights '' --cfg yolov5x_zalo_traffic.yaml --hyp data/hyp.phase6.yaml --multi-scale --worker 20 --weights runs/exp47/weights/last.pt --resume
+nohup python -u detect_zalo.py --weights /home/hana/sonnh/zalo-traffic-sign-detection/yolov5/runs/exp52/weights/last49.pt --img-size 640 --conf-thres 0.25 --iou-thres 0.45 --device 1 --output_dir eval/val_model_160_input_384_resize_640 --stride_w 84 --stride_h 84 --input_w 384 --input_h 384 --root_dir /home/hana/sonnh/zalo-traffic-sign-detection/za_traffic_2020/traffic_train/val_fold_0 --save_image --json_dir val_model_160_input_384_resize_640.json > eval/log_val_model_160_input_384_resize_640.log &

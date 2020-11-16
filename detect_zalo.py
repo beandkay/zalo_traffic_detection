@@ -76,7 +76,7 @@ def load_model(opt):
         model.half()  # to FP16
     return model.eval(), device
 
-def detect_coco(model, image, image_meta, opt, device, save_image = True):
+def detect_coco(model, image, image_meta, opt, device):
     # device = select_device(opt.device)
     half = device.type != 'cpu'
     names = model.module.names if hasattr(model, 'module') else model.names
@@ -92,10 +92,15 @@ def detect_coco(model, image, image_meta, opt, device, save_image = True):
                 continue
             img = img_obj.image
             boxes = infer(model, img, w_index, h_index, opt, device, half)
+
+            if opt.single_class:
+                for bbox in boxes:
+                    bbox.cat = 0
+
             list_image_split[w_index][h_index].bboxes = boxes
     new_img_anno = img_det.merge_boxes(list_image_split, 8, 0.1)
     org, overlaid = new_img_anno.bboxesOnImage(opt.root_dir)
-    if save_image:
+    if opt.save_image:
         cv2.imwrite('{}/{}.png'.format(opt.output_dir, image_meta["image_id"]), overlaid)
     # print(new_img_anno.toJson())
     return new_img_anno.toJson()
@@ -173,7 +178,7 @@ def zalo_image_detect(opt):
         json_ = detect_coco(model, original_image, img_meta, opt, device)
         sample_json += json_
 
-    with open('first.json', 'w') as outfile:
+    with open(opt.json_dir, 'w') as outfile:
         json.dump(sample_json, outfile)
 
 def detect(save_img=False):
@@ -323,6 +328,11 @@ if __name__ == '__main__':
     parser.add_argument('--input_w', type=int, default=384, help='stride_w')
     parser.add_argument('--input_h', type=int, default=384, help='stride_w')
     parser.add_argument('--root_dir', type=str, default="/home/asilla/sonnh/yolov5/inference/zalo_test/", help='directory to save results')
+    parser.add_argument('--save_image', action='store_true')
+    parser.add_argument('--json_dir', type=str, default="", help='directory to save json  results')
+    parser.add_argument('--single_class', action='store_true')
+    
+    
     opt = parser.parse_args()
     print(opt)
 
