@@ -1,1 +1,24 @@
-nohup python -u detect_zalo.py --weights /home/hana/sonnh/zalo-traffic-sign-detection/yolov5/runs/exp52/weights/last49.pt --img-size 640 --conf-thres 0.25 --iou-thres 0.45 --device 1 --output_dir eval/val_model_160_input_384_resize_640 --stride_w 84 --stride_h 84 --input_w 384 --input_h 384 --root_dir /home/hana/sonnh/zalo-traffic-sign-detection/za_traffic_2020/traffic_train/val_fold_0 --save_image --json_dir val_model_160_input_384_resize_640.json > eval/log_val_model_160_input_384_resize_640.log &
+python -u detect_zalo.py --weights /home/asilla/sonnh/checkpoint/fold3/last40.pt \
+--img-size 608 --conf-thres 0.3 --iou-thres 0.1 --device 0 \
+--output_dir /home/asilla/sonnh/test/test_fold_3_model_160_best_input_384_resize_608 \
+--stride_w 84 --stride_h 84 --input_w 384 --input_h 384 \
+--root_dir /home/asilla/sonnh/za_traffic_2020/traffic_public_test/images \
+--save_image --json_dir /home/asilla/sonnh/test/test_fold_3_model_160_best_input_384_resize_608.json
+
+
+
+python -u detect_zalo.py --weights /home/asilla/sonnh/checkpoint/fold2/best.pt \
+--img-size 608 --conf-thres 0.3 --iou-thres 0.1 --device 0 \
+--output_dir /home/asilla/sonnh/eval/val_fold_2_model_160_best_input_384_resize_608 \
+--stride_w 84 --stride_h 84 --input_w 384 --input_h 384 --root_dir /home/asilla/sonnh/eval/val_fold2 \
+--save_image --json_dir /home/asilla/sonnh/eval/val_fold_2_model_160_best_input_384_resize_608.json
+
+
+
+
+python -u detect_zalo.py --weights /home/asilla/sonnh/checkpoint/fold2/model_160_last36.pt \
+--img-size 608 --conf-thres 0.3 --iou-thres 0.1 --device 0 \
+--output_dir /home/asilla/sonnh/test/test \
+--stride_w 84 --stride_h 84 --input_w 384 --input_h 384 \
+--root_dir /home/asilla/sonnh/za_traffic_2020/traffic_public_test/images \
+--json_dir /home/asilla/sonnh/test/test.json

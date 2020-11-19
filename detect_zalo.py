@@ -120,6 +120,8 @@ def infer(model, img, w_index, h_index, opt,device, half=True):
         pred = model(img, augment=opt.augment)[0]
         pred = non_max_suppression(pred, opt.conf_thres, opt.iou_thres, classes=opt.classes, agnostic=opt.agnostic_nms)
 
+        # print(type(pred), '\n\n')
+
         det_boxes = []
         for _, det in enumerate(pred):  # detections per image
             if det is not None and len(det):
