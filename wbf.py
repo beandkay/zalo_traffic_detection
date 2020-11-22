@@ -67,7 +67,7 @@ def wbf(all_dets, iou_thr=0.9, skip_box_thr=0.001, width=1622, height=626):
                 boxes_to_fusion.append(box)
                 class_to_fusion.append(class_id)
                 scores_to_fusion.append(score)
-        if len(boxes_to_fusion) >= 4:
+        if len(boxes_to_fusion) >= 2:
             boxes, scores, labels = weighted_boxes_fusion(boxes_to_fusion, scores_to_fusion, class_to_fusion, weights=[1, 2, 3, 2, 2], iou_thr=iou_thr, skip_box_thr=skip_box_thr)
         else:
             boxes = boxes_to_fusion[0]
