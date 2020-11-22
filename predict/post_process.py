@@ -4,6 +4,7 @@ import json
 import os
 import cv2
 import math
+from ensemble_boxes import *
 BLUE=(255, 0, 0)
 GREEN = (0, 255, 0)
 RED = (0, 0, 255)
@@ -243,43 +244,13 @@ class ImageDetectionResult:
             pick = non_max_suppression_fast(all_bboxes, threshold)
             remain_boxes = [all_bboxes[pick_i] for pick_i in pick]
             final_bboxes += remain_boxes
-        return final_bboxes
-    def _group_detections_v2(self, number_classes, threshold):
-        final_bboxes = []
-        no_img_h = math.ceil((self.h - self.out_h)/self.stride_h) + 1
-        no_img_w = math.ceil((self.w - self.out_w)/self.stride_w) + 1
-        all_bboxes = []
-        # no_img_w, no_img_h = self.splited_imgs.shape[:2]
-        # print(no_img_w, no_img_h)
-        count = 0
-        for i in range(no_img_w):
-            for j in range(no_img_h):
-                original_boxes = self.part_img_objects[i][j].get_boxes_on_original_images(self.h, self.w, self.stride_w, self.stride_h)
-                if len(original_boxes) > 0:
-                    for box in original_boxes:
-                        # if box.cat == class_id:
-                        box.set_part_index(i, j)
-                        all_bboxes.append(box)
-                    # all_bboxes += [box for box in original_boxes if box.cat == class_id]
 
-        sorted(all_bboxes, key=lambda x: x.area(), reverse=True)
-        pick = non_max_suppression_fast(all_bboxes, threshold)
-        final_bboxes = [all_bboxes[pick_i] for pick_i in pick]
-            # final_bboxes += remain_boxes
         return final_bboxes
 
-    def merge_boxes(self, detection_results, number_classes=7, threshold=0.1):
+    def merge_boxes(self, detection_results, number_classes=8, threshold=0.1):
         self._load_detection_results(detection_results)
         remain_bboxes = self._group_detections(number_classes, threshold)
         return ImageAnnotation(self.img_meta["image_id"], self.h, self.w, self.img_meta["file_name"], remain_bboxes)
-
-    def merge_boxes_v2(self, detection_results, number_classes=7, threshold=0.1):
-        self._load_detection_results(detection_results)
-        remain_bboxes = self._group_detections(number_classes, threshold)
-        sorted(remain_bboxes, key=lambda x: x.get_score(), reverse=True)
-        pick = non_max_suppression_fast(remain_bboxes, 0.4)
-        final_bboxes = [remain_bboxes[pick_i] for pick_i in pick]
-        return ImageAnnotation(self.img_meta["image_id"], self.h, self.w, self.img_meta["file_name"], final_bboxes)
 
 
     def _load_detection_results(self, detection_results):
@@ -407,8 +378,8 @@ class Bbox:
         '''
         draw bbox on image
         '''
-        start_point = (self.box[0], self.box[1])
-        end_point = (self.box[0]+self.box[2], self.box[1]+self.box[3])
+        start_point = (int(self.box[0]), int(self.box[1]))
+        end_point = (int(self.box[0]+self.box[2]), int(self.box[1]+self.box[3]))
         overlaid_img = cv2.rectangle(image.copy(), start_point , end_point, COLOR_CLASS[self.cat], 2)
         return overlaid_img
 
