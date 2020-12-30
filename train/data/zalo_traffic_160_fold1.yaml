@@ -1,0 +1,20 @@
+train: /model/prepare_data/data_fold1/images/train
+val: /model/prepare_data/data_fold1/images/val  # 5000 images
+
+# number of classes
+nc: 7
+
+# class names
+names: ["Cam nguoc chieu", 
+        "Cam dung và do",
+        "Cam re",
+        "Gioi han toc đo",
+        "Cam con lai",
+        "Nguy hiem",
+        "Hieu lenh"]
+
+# Print classes
+# with open('data/coco.yaml') as f:
+#   d = yaml.load(f, Loader=yaml.FullLoader)  # dict
+#   for i, x in enumerate(d['names']):
+#     print(i, x)
